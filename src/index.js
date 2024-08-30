@@ -1,9 +1,10 @@
 import './pages/index.css';
 
-import { initialCards } from './scripts/cards';
+import { initialCards } from './components/cards';
 
 import { openModal } from './components/modal';
 import { closeModal } from './components/modal';
+import { closeByOverlay } from './components/modal';
 
 import { createCard } from './components/card';
 import { deletingCard } from './components/card';
@@ -22,7 +23,7 @@ const closeButtons = document.querySelectorAll('.popup__close');
 
 const popupImg = document.querySelector('.popup_type_image');
 
-const formElement = document.querySelector('.popup_type_edit .popup__form'); 
+const formEdit = document.querySelector('.popup_type_edit .popup__form'); 
 const nameInput = document.querySelector('.popup__input_type_name'); 
 const jobInput = document.querySelector('.popup__input_type_description'); 
 const profileTitle = document.querySelector('.profile__title');
@@ -73,7 +74,7 @@ function openEditPopup() {
     jobInput.value = profileDescription.textContent; 
 }
 
-function handleFormSubmit(evt) {
+function editProfile(evt) {
     evt.preventDefault();
 
     const newNameInput = nameInput.value;
@@ -85,9 +86,6 @@ function handleFormSubmit(evt) {
     closeModal(editPopup);
 }
 
-formElement.addEventListener('submit', handleFormSubmit);
-editButton.addEventListener('click', openEditPopup);
-
 function addingNewCard(evt) {
     evt.preventDefault();
 
@@ -98,6 +96,14 @@ function addingNewCard(evt) {
     cardList.prepend(createCard(newDataCard, deletingCard, likeCard, gettingDataImg));
 
     closeModal(addCardPopup);
+    formCard.reset();
 }
+
+editPopup.addEventListener('click', closeByOverlay);
+addCardPopup.addEventListener('click', closeByOverlay);
+popupImg.addEventListener('click', closeByOverlay);
+
+formEdit.addEventListener('submit', editProfile);
+editButton.addEventListener('click', openEditPopup);
 
 formCard.addEventListener('submit', addingNewCard);

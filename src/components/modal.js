@@ -1,11 +1,11 @@
 export function openModal(popup) {
     popup.classList.add('popup_is-opened');
-    popup.addEventListener('click', closeByOverlay);
     document.addEventListener('keydown', closeByEsc);
 }
 
 export function closeModal(popup) {
     popup.classList.remove('popup_is-opened');
+    document.removeEventListener('keydown', closeByEsc);
 }
 
 function closeByEsc(evt) {
@@ -15,9 +15,8 @@ function closeByEsc(evt) {
     }
 }
 
-function closeByOverlay(evt) {
+export function closeByOverlay(evt) {
     if (evt.target === evt.currentTarget) {
-        const popupOpen = document.querySelector('.popup_is-opened');
-        closeModal(popupOpen);
+        closeModal(evt.currentTarget);
     }
 }
