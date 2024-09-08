@@ -24,8 +24,14 @@ export function createCard(dataCard, deletingCard, likeCard, gettingDataImg, use
     } else {
         deletingButton.classList.remove('card__delete-button');
     }
-    
+
     counterLike.textContent = Array.isArray(dataCard.likes) ? dataCard.likes.length : 0;
+
+    if (dataCard.likes.some(like => like._id ===userId)) {
+        likeButton.classList.add('card__like-button_is-active')
+    }
+
+    console.log(dataCard._id)
 
     likeButton.addEventListener('click', (evt) => {
         likeCard(evt, dataCard._id, counterLike, likeButton);
@@ -40,8 +46,10 @@ export function createCard(dataCard, deletingCard, likeCard, gettingDataImg, use
 
 // @todo: Функция удаления карточки
 export function deletingCard(element, cardId) {
-    element.remove();
     deleteDataCard(cardId)
+    .then(() => {
+       element.remove(); 
+    })
     .catch((err) => {
         console.log(err);
     })
@@ -49,25 +57,16 @@ export function deletingCard(element, cardId) {
 }
 
 export function likeCard(evt, cardId, counterLike, likeButton) {
+    console.log("Card ID:", cardId);
     const isLiked = likeButton.classList.contains('card__like-button_is-active');
 
-    if (!isLiked) {
-        addLike(cardId)
-        .then((updatedCard) => {
-            likeButton.classList.add('card__like-button_is-active');
-            counterLike.textContent = Array.isArray(updatedCard.likes) ? updatedCard.likes.length : 0;
-        })
-        .catch((err) => {
-            console.log(err);
-        });
-    } else {
-        removeLike(cardId)
-        .then((updatedCard) => {
-            likeButton.classList.remove('card__like-button_is-active');
-            counterLike.textContent = Array.isArray(updatedCard.likes) ? updatedCard.likes.length : 0;
-        })
-        .catch((err) => {
-            console.log(err);
-        });
-    }
+    const likeMethod = isLiked ? removeLike : addLike;
+    likeMethod(cardId) 
+    .then((updatedCard) => {
+        likeButton.classList.toggle('card__like-button_is-active'); 
+        counterLike.textContent = updatedCard.likes.length;
+    })
+    .catch((err) => {
+        console.log(err)
+    });
 }

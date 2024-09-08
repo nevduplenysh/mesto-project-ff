@@ -130,13 +130,15 @@ function editProfile(evt) {
     const newNameInput = nameInput.value;
     const newJobInput = jobInput.value;
 
-    profileTitle.textContent = newNameInput;
-    profileDescription.textContent = newJobInput;
     renderLoading(true, submitButtonEdit);
 
     editDataProfile({
         name: newNameInput,
         about: newJobInput
+    })
+    .then((res) => {
+        profileTitle.textContent = res.name; 
+        profileDescription.textContent = res.about;
     })
     .catch((err) => {
         console.log(err); 
@@ -159,18 +161,21 @@ function addingNewCard(evt) {
         name: newCardNameInput,
         link: newCardUrlInput
     })
+
+    .then((res) => {
+        const newDataCard = res;
+        const userId = newDataCard.owner._id;
+        cardList.prepend(createCard(newDataCard, deletingCard, likeCard, gettingDataImg, userId));
+        closeModal(addCardPopup);
+        formCard.reset();
+    })
+
     .catch((err) => {
         console.log(err);
     })
     .finally(() => {
         renderLoading(false, submitButtonCard);
     });
-
-    const newDataCard = {name: newCardNameInput, link: newCardUrlInput};
-    cardList.prepend(createCard(newDataCard, deletingCard, likeCard, gettingDataImg));
-
-    closeModal(addCardPopup);
-    formCard.reset();
 }
 
 function editAvatar (evt) {
@@ -194,11 +199,7 @@ function editAvatar (evt) {
 }
 
 function renderLoading(isLoading, button) {
-    if (isLoading) {
-        button.textContent = 'Сохранение...';
-    } else {
-        button.textContent = 'Сохраненить';
-    }
+    button.textContent = isLoading ? 'Сохранение...' : 'Сохранить';
 }
 
 editPopup.addEventListener('click', closeByOverlay);
